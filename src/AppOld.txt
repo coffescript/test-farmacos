@@ -1,0 +1,145 @@
+import React, { Fragment, useState, useEffect, Component } from 'react';
+import Loginform from './components/Loginform';
+import Home from './components/Home';
+import Menubar from './components/Menubar';
+
+import {
+	Button,
+	Container,
+	Divider,
+	Dropdown,
+	Grid,
+	Header,
+	Icon,
+	Image,
+	Label,
+	Menu,
+	Message,
+	Segment,
+	Table,
+	Progress
+  } from "semantic-ui-react";
+
+
+  
+function App() {
+
+	state = {
+		dropdownMenuStyle: {
+		  topNavbar: {
+			display: "none"
+		  },
+		  firstNavbar: {
+			display: "none"
+		  },
+		  secondNavbar: {
+			display: "none"
+		  }
+		}
+	  };
+
+	const [ logged, setLogged ] = useState(false);
+
+	const [ user, setUser ] = useState('');
+	const [ email, setEmail ] = useState('');
+	const [ passwd, setPasswd ] = useState('');
+	const [ login, setLogin ] = useState(false);
+	const [ token, setToken ] = useState('');
+
+	// const [ cargando, setCargando ] = useState(false);
+
+
+	const consultarLogin = async () => {
+		if((email.length>0)&&(passwd.length>0)) {
+			// const url = `http://localhost/api/auth/login?email=${email}&password=${passwd}&active=1`;
+			
+			// const api = await fetch(url);
+			// const tkn = await api.post();
+
+			
+			let formdata = new FormData();
+			formdata.append("email", `${email}`);
+			formdata.append("password", `${passwd}`);
+
+			let requestOptions = {
+				method: 'POST',
+				body: formdata,
+				redirect: 'follow'
+			};
+
+			let access_token;
+			const res = await fetch("http://localhost:80/api/auth/login", requestOptions)
+			.then(response => response.text())
+			.then(result => setUser(result))
+			.catch( error => console.log('error', error));
+			
+			console.log(user);
+
+			/*
+			let formdata = new FormData();
+			formdata.append("email", `${email}`);
+			formdata.append("password", `${passwd}`);
+
+			const requestOptions = {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: formdata,
+				redirect: 'follow'
+			};
+			const response = await fetch('http://localhost:80/api/auth/login', requestOptions);
+			// const data = await response.json();
+			// this.setUser({ data: data });
+*/
+		}
+	}
+
+// function logout() {
+// 		setLogged(false);
+// 		setUser('');
+// 		setPasswd('');
+// 		setLogin(false);
+// }
+
+	useEffect( () => {
+		consultarLogin();
+			// eslint-disable-next-line
+	}, [ login ]); 
+
+console.log(logged);
+
+return (
+		<Fragment>
+			<Header as='h2' textAlign='center'>
+				<Header.Content><br />Farma Control</Header.Content>
+			</Header>		
+			{(logged)
+				? (	
+					<div>
+					<Menubar />
+					<div className="container"><br />
+					<Home mensaje = {'Hola mundillo'} />
+					</div>
+					</div>
+					)
+					: 
+					<div>
+						<div className="container">
+						<Menubar />
+						<div className="row">
+							<Loginform 
+							email = { email }
+							setEmail = { setEmail }
+							passwd = { passwd }
+							setPasswd = { setPasswd }
+							login = { login }
+							setLogin = { setLogin }
+						/>
+					</div>
+				</div>
+			</div>
+			}	
+		</Fragment>
+);
+}
+
+export default App;
